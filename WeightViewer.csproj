@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+      <TargetFramework>netstandard2.1</TargetFramework>
+      <Nullable>enable</Nullable>
+      <Company>frogred8</Company>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <DuckovPath>D:\01_Game\Steam\steamapps\common\Escape from Duckov</DuckovPath>
+      <SubPath>\Duckov_Data\Managed\</SubPath>
+		  <OutputPath>D:\01_Game\Steam\steamapps\common\Escape from Duckov\Duckov_Data\Mods\WeightViewer</OutputPath>
+      <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+      <AppendConfigurationToOutputPath>false</AppendConfigurationToOutputPath>
+		  <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+		  <OutputType>Library</OutputType>
+		  <PackAsTool>True</PackAsTool>
+		  <ToolCommandName />
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="$(DuckovPath)$(SubPath)TeamSoda.*" Private="False" />
+        <Reference Include="$(DuckovPath)$(SubPath)ItemStatsSystem.dll" Private="False" />      
+        <Reference Include="$(DuckovPath)$(SubPath)Unity*" Private="False" />
+    </ItemGroup>
+</Project>
