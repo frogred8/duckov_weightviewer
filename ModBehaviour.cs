@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting.FullSerializer;
-using System.Runtime.CompilerServices;
+//using System.Runtime.CompilerServices;
 
 
 namespace WeightViewer
@@ -322,6 +322,19 @@ namespace WeightViewer
             }
         }
 
+        void RefreshActivateControls()
+        {
+            if (hudObject)
+            {
+                hudObject.SetActive(config.showMain);
+            }
+
+            if (viewObject)
+            {
+                viewObject.SetActive(config.showInventory);
+            }
+        }
+
         void Log(String str, string callerName = "")
         //void Log(String str, [CallerMemberName] string callerName = "")
         {
@@ -393,6 +406,8 @@ namespace WeightViewer
 
             Log($"Config changed: {key}");
             LoadConfigFromModConfig();
+            RefreshActivateControls();
+            RefreshWeightText(prevTotalWeight, prevMaxWeight);
         }
     }
 
