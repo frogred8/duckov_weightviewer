@@ -1,9 +1,12 @@
 ﻿using System;
 using Duckov.UI;
+using Duckov.Modding;
+using Duckov.Utilities;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
-//using System.Runtime.CompilerServices;
+using Unity.VisualScripting.FullSerializer;
+using System.Runtime.CompilerServices;
 
 
 namespace WeightViewer
@@ -24,6 +27,13 @@ namespace WeightViewer
             View.OnActiveViewChanged += OnActiveViewChanged;
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
+
+            if (ModConfigAPI.IsAvailable())
+            {
+                SetupModConfig();
+                LoadConfigFromModConfig();
+            }
+
         }
         void OnDisable()
         {
@@ -73,6 +83,16 @@ namespace WeightViewer
         Color normalColor = new Color32(200, 225, 110, 255);
         Color heavyColor = new Color32(255, 190, 30, 255);
         Color overColor = new Color32(255, 120, 120, 255);
+
+        public class ModConfig
+        {
+            public bool showMain = true;
+            public bool showInventory = true;
+        }
+
+        private ModConfig config = new ModConfig();
+        private const string MOD_NAME = "WeightViewer";
+
 
         void CreateUI_HealthHUD()
         {
@@ -274,17 +294,31 @@ namespace WeightViewer
 
             if (hudObject)
             {
-                hudWeightText.color = color;
-                hudWeightText.text = $"{totalWeight:F1}kg";
-                hudHeavyText.text = $"{heavy}kg";
-                hudOverText.text = $"{over}kg";
+                if (config.showMain)
+                {
+                    hudWeightText.color = color;
+                    hudWeightText.text = $"{totalWeight:F1}kg";
+                    hudHeavyText.text = $"{heavy}kg";
+                    hudOverText.text = $"{over}kg";
+                } 
+                else
+                {
+                    hudObject.SetActive(false);
+                }
             }
 
             CreateUI_LootView();
             if (viewObject)
             {
-                viewHeavyText.text = $"{heavy}kg";
-                viewOverText.text = $"{over}kg";
+                if (config.showInventory)
+                {
+                    viewHeavyText.text = $"{heavy}kg";
+                    viewOverText.text = $"{over}kg";
+                }
+                else
+                {
+                    viewObject.SetActive(false);
+                }
             }
         }
 
@@ -293,5 +327,73 @@ namespace WeightViewer
         {
             //Debug.Log($"{Time.time:F4}|[WV] {callerName}() {str}");
         }
+
+
+        ///////////////////////////////////////////
+        // ModConfig
+        
+        private void SetupModConfig()
+        {
+            if (!ModConfigAPI.IsAvailable())
+            {
+                Log("ModConfigAPI not available!");
+                return;
+            }
+
+            try
+            {
+                ModConfigAPI.SafeAddOnOptionsChangedDelegate(OnModConfigOptionsChanged);
+                ModConfigAPI.SafeAddBoolDropdownList(
+                    MOD_NAME,
+                    "showMain",
+                    ModLocalization.GetTranslation(ModLocalization.ConfigShowMainKey),
+                    config.showMain
+                );
+                ModConfigAPI.SafeAddBoolDropdownList(
+                    MOD_NAME,
+                    "showInventory",
+                    ModLocalization.GetTranslation(ModLocalization.ConfigShowInventoryKey),
+                    config.showInventory
+                );
+
+                Log("ModConfig setup completed successfully!");
+            }
+            catch (Exception ex)
+            {
+                Log($"Error setting up ModConfig: {ex.Message}");
+            }
+        }
+
+        private void LoadConfigFromModConfig()
+        {
+            if (!ModConfigAPI.IsAvailable())
+            {
+                return;
+            }
+
+            try
+            {
+                config.showMain = ModConfigAPI.SafeLoad<bool>(MOD_NAME, "showMain", config.showMain);
+                config.showInventory = ModConfigAPI.SafeLoad<bool>(MOD_NAME, "showInventory", config.showInventory);
+
+                Log($"Config loaded - showMain: {config.showMain}, showInventory: {config.showInventory}");
+            }
+            catch (Exception ex)
+            {
+                Log($"Error loading config: {ex.Message}");
+            }
+        }
+
+        private void OnModConfigOptionsChanged(string key)
+        {
+            if (!key.StartsWith(MOD_NAME + "_"))
+            {
+                return;
+            }
+
+            Log($"Config changed: {key}");
+            LoadConfigFromModConfig();
+        }
     }
+
 }

@@ -21,8 +21,9 @@
       <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="$(DuckovPath)$(SubPath)TeamSoda.*" Private="False" />
-        <Reference Include="$(DuckovPath)$(SubPath)ItemStatsSystem.dll" Private="False" />      
-        <Reference Include="$(DuckovPath)$(SubPath)Unity*" Private="False" />
+      <Reference Include="$(DuckovPath)$(SubPath)TeamSoda.*" Private="False" />
+      <Reference Include="$(DuckovPath)$(SubPath)SodaLocalization.dll" Private="False" />
+      <Reference Include="$(DuckovPath)$(SubPath)ItemStatsSystem.dll" Private="False" />      
+      <Reference Include="$(DuckovPath)$(SubPath)Unity*" Private="False" />
     </ItemGroup>
 </Project>
